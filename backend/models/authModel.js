@@ -10,10 +10,7 @@ const authSchema=mongoose.Schema({
         type:String,
         required:true,
     },
-     repassword:{
-        type:String,
-        required:true,
-    },
+    
 })
 
 const Auth=mongoose.model("Auth",authSchema)
