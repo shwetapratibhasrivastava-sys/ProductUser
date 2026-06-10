@@ -3,15 +3,20 @@ import Product from "../models/productModel.js";
 export const create = async (req, res) => {
   try {
     const { productName, category, description } = req.body;
+
     if (!productName || !category || !description) {
       return res.json({
         message: "All fields are required",
       });
     }
-    const existingOne = await Product.findOne({ productName });
+
+    const existingOne = await Product.findOne({
+      productName,
+    });
+
     if (existingOne) {
       return res.json({
-        message: "Product already exisits",
+        message: "Product already exists",
       });
     }
 
@@ -20,8 +25,10 @@ export const create = async (req, res) => {
       category,
       description,
     });
+
     return res.json({
       message: "Product created successfully",
+      data: product,
     });
   } catch (error) {
     return res.json({
@@ -30,80 +37,98 @@ export const create = async (req, res) => {
   }
 };
 
+export const get = async (req, res) => {
+  try {
+    const products = await Product.find();
 
-export const get=async(req,res)=>{
-    try {
-        const product=await Product.find()
-        return res.json({
-      message: "Product fetched successfully",
+    return res.json({
+      message: "Products fetched successfully",
+      data: products,
     });
-    } catch (error) {
-        return res.json({
+  } catch (error) {
+    return res.json({
       message: error.message,
     });
-    }
-}
+  }
+};
 
-export const getById=async(req,res)=>{
-    try {
-        const existingOne = await Product.findOne({ productName });
-    if (!existingOne) {
+export const getById = async (req, res) => {
+  try {
+    const product = await Product.findById(
+      req.params.id
+    );
+
+    if (!product) {
       return res.json({
-        message: "Product don't exisits",
+        message: "Product doesn't exist",
       });
     }
-        const product=await Product.findById(req.params.id)
-        return res.json({
+
+    return res.json({
       message: "Product fetched successfully",
+      data: product,
     });
-    } catch (error) {
-        return res.json({
+  } catch (error) {
+    return res.json({
       message: error.message,
     });
-    }
-}
+  }
+};
 
+export const update = async (req, res) => {
+  try {
+    const product = await Product.findById(
+      req.params.id
+    );
 
-
-export const update=async(req,res)=>{
-    try {
-        const existingOne = await Product.findOne({ productName });
-    if (!existingOne) {
+    if (!product) {
       return res.json({
-        message: "Product don't exisits",
+        message: "Product doesn't exist",
       });
     }
-        const product=await Product.findByIdAndUpdate(req.params.id,req.body,{
-            new:true
-        })
-        return res.json({
+
+    const updatedProduct =
+      await Product.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true,
+        }
+      );
+
+    return res.json({
       message: "Product updated successfully",
+      data: updatedProduct,
     });
-    } catch (error) {
-        return res.json({
+  } catch (error) {
+    return res.json({
       message: error.message,
     });
-    }
-}
+  }
+};
 
+export const deleted = async (req, res) => {
+  try {
+    const product = await Product.findById(
+      req.params.id
+    );
 
-export const deleted=async(req,res)=>{
-   try {
-        const existingOne = await Product.findOne({ productName });
-    if (!existingOne) {
+    if (!product) {
       return res.json({
-        message: "Product don't exisits",
+        message: "Product doesn't exist",
       });
     }
-        const product=await Product.findByIdAndDelete(req.params.id)
-        return res.json({
+
+    await Product.findByIdAndDelete(
+      req.params.id
+    );
+
+    return res.json({
       message: "Product deleted successfully",
     });
-    } catch (error) {
-        return res.json({
+  } catch (error) {
+    return res.json({
       message: error.message,
     });
-    }
-}
- 
-
+  }
+};
