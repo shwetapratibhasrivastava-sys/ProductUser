@@ -16,7 +16,7 @@ const schema = yup.object({
 
 // API Call Function
 const postFormData = async (formData) => {
-  const res = await fetch("http://localhost:5000/api/mail/send", {
+  const res = await fetch("http://localhost:3000/api/mail/send", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
