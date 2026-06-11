@@ -16,7 +16,8 @@ const schema = yup.object({
 
 // API Call Function
 const postFormData = async (formData) => {
-  const res = await fetch("http://localhost:3000/api/mail/send", {
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
+  const res = await fetch(`${apiBaseUrl}/api/mail/send`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
