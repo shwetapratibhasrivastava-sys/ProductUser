@@ -1,6 +1,7 @@
 import Auth from "../models/authModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import cloudinary from "../config/cloudinary.js";
 
 export const register = async (req, res) => {
   try {
@@ -26,11 +27,25 @@ export const register = async (req, res) => {
       });
     }
 
+    let imageUrl = "";
+
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(
+        req.file.path,
+        {
+          folder: "users",
+        }
+      );
+
+      imageUrl = result.secure_url;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await Auth.create({
       email,
       password: hashedPassword,
+      image: imageUrl,
     });
 
     const token = jwt.sign(
@@ -47,10 +62,7 @@ export const register = async (req, res) => {
     return res.json({
       message: "User created successfully",
       token,
-      data: {
-        _id: user._id,
-        email: user.email,
-      },
+      data: user,
     });
   } catch (error) {
     return res.json({
@@ -102,10 +114,7 @@ export const login = async (req, res) => {
     return res.json({
       message: "User login successfully",
       token,
-      data: {
-        _id: existingOne._id,
-        email: existingOne.email,
-      },
+      data: existingOne,
     });
   } catch (error) {
     return res.json({

@@ -1,44 +1,19 @@
 import express from "express";
 import {
-  create,
-  deleted,
-  get,
-  getById,
-  update,
-} from "../controllers/product.js";
+  register,
+  login,
+} from "../controllers/auth.js";
 
-import authMiddleware from "../middleware/authMiddleware.js";
+import upload from "../middleware/auth.multer.middleware.js";
 
-const productRoute = express.Router();
+const authRoute = express.Router();
 
-productRoute.post(
-  "/create",
-  authMiddleware,
-  create
+authRoute.post(
+  "/register",
+  upload.single("image"),
+  register
 );
 
-productRoute.get(
-  "/get",
-  authMiddleware,
-  get
-);
+authRoute.post("/login", login);
 
-productRoute.get(
-  "/getById/:id",
-  authMiddleware,
-  getById
-);
-
-productRoute.put(
-  "/update/:id",
-  authMiddleware,
-  update
-);
-
-productRoute.delete(
-  "/delete/:id",
-  authMiddleware,
-  deleted
-);
-
-export default productRoute;
+export default authRoute;
