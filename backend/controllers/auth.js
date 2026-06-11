@@ -1,128 +1,3 @@
-<<<<<<< HEAD
-import Auth from "../models/authModel.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import cloudinary from "../config/cloudinary.js";
-
-export const register = async (req, res) => {
-  try {
-    const { email, password, repassword } = req.body;
-
-    if (!email || !password || !repassword) {
-      return res.json({
-        message: "All fields are required",
-      });
-    }
-
-    const existingOne = await Auth.findOne({ email });
-
-    if (existingOne) {
-      return res.json({
-        message: "User already exists",
-      });
-    }
-
-    if (password !== repassword) {
-      return res.json({
-        message: "Passwords do not match",
-      });
-    }
-
-    let imageUrl = "";
-
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(
-        req.file.path,
-        {
-          folder: "users",
-        }
-      );
-
-      imageUrl = result.secure_url;
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await Auth.create({
-      email,
-      password: hashedPassword,
-      image: imageUrl,
-    });
-
-    const token = jwt.sign(
-      {
-        id: user._id,
-        email: user.email,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRY,
-      }
-    );
-
-    return res.json({
-      message: "User created successfully",
-      token,
-      data: user,
-    });
-  } catch (error) {
-    return res.json({
-      message: error.message,
-    });
-  }
-};
-
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.json({
-        message: "All fields are required",
-      });
-    }
-
-    const existingOne = await Auth.findOne({ email });
-
-    if (!existingOne) {
-      return res.json({
-        message: "User doesn't exist",
-      });
-    }
-
-    const valid = await bcrypt.compare(
-      password,
-      existingOne.password
-    );
-
-    if (!valid) {
-      return res.json({
-        message: "Invalid credentials",
-      });
-    }
-
-    const token = jwt.sign(
-      {
-        id: existingOne._id,
-        email: existingOne.email,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: process.env.JWT_EXPIRY,
-      }
-    );
-
-    return res.json({
-      message: "User login successfully",
-      token,
-      data: existingOne,
-    });
-  } catch (error) {
-    return res.json({
-      message: error.message,
-    });
-  }
-=======
 import Auth from "../models/authModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -202,10 +77,7 @@ export const login = async (req, res) => {
       });
     }
 
-    const valid = await bcrypt.compare(
-      password,
-      existingOne.password
-    );
+    const valid = await bcrypt.compare(password, existingOne.password);
 
     if (!valid) {
       return res.json({
@@ -237,5 +109,4 @@ export const login = async (req, res) => {
       message: error.message,
     });
   }
->>>>>>> ac1bf44 (updated)
 };

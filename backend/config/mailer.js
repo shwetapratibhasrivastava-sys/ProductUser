@@ -13,11 +13,4 @@ const mailer = nodemailer.createTransport({
   },
 });
 
-try {
-  await mailer.verify();
-  console.log("SMTP Connected");
-} catch (error) {
-  console.log("SMTP Error:", error.message);
-}
-
 export default mailer;
